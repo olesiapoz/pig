@@ -27,6 +27,17 @@ def roll(turn_total, outcome):
     >>> roll(99, 1)
     (1, 0, True)
     """
+    turn = 0
+    over = False
+
+    if outcome !=1 and turn_total < 101:
+        over = False
+        turn = outcome+turn
+    turn_total = turn_total + turn
+    return (turn, turn_total, over)
+
+
+
     "*** YOUR CODE HERE ***"
 
 def hold(turn_total, outcome):
