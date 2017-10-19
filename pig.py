@@ -4,7 +4,7 @@ from dice import make_fair_die, make_test_die
 from ucb import main, trace, log_current_line, interact
 
 goal = 100  # The goal of pig is always to score 100 points.
-score = 0
+
 
 # Taking turns
 
@@ -69,6 +69,7 @@ def hold(turn_total, outcome):
 
     return (score, turn_total, over)
 
+@trace
 def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
     """Simulate a single turn and return the points scored for the whole turn.
 
@@ -82,14 +83,19 @@ def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
     who -- name of the current player
     comments -- a boolean; whether commentary is enabled
     """
+
     score_for_turn = 0  # Points scored in the whole turn
-    "*** YOUR CODE HERE ***"
+    if plan(score_for_turn) == roll:
+        while not plan(score_for_turn)(score_for_turn, (dice()))[2]:
+            score_for_turn = plan(score_for_turn)(score_for_turn, dice())[1]
     return score_for_turn
 
+@trace
 def take_turn_test():
     """Test the take_turn function using deterministic test dice."""
     plan = make_roll_until_plan(10)  # plan is a function (see problem 2)
-    "*** YOUR CODE HERE ***"
+    assert take_turn(plan, make_test_die(3,2,4,5)) == 14, 'Outcome shuold be 14'
+    assert take_turn(plan, make_test_die(1, 3, 2, 4, 5)) == 0, 'Outcome shuold be 0'
     print(take_turn(plan))  # Not deterministic
 
 
