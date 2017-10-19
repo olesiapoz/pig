@@ -31,8 +31,8 @@ def roll(turn_total, outcome):
     over = False
 
     if outcome !=1 and turn_total < 101:
-        over = False
-        turn = outcome+turn
+        turn_temp = outcome+turn
+
     turn_total = turn_total + turn
     return (turn, turn_total, over)
 
