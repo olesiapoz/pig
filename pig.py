@@ -61,7 +61,13 @@ def hold(turn_total, outcome):
     >>> hold(99, 1)
     (99, 0, True)
     """
-    "*** YOUR CODE HERE ***"
+    score = 0
+    over = True
+
+    score = score + turn_total
+    turn_total = 0
+
+    return (score, turn_total, over)
 
 def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
     """Simulate a single turn and return the points scored for the whole turn.
