@@ -4,6 +4,7 @@ from dice import make_fair_die, make_test_die
 from ucb import main, trace, log_current_line, interact
 
 goal = 100  # The goal of pig is always to score 100 points.
+score = 0
 
 # Taking turns
 
@@ -27,18 +28,23 @@ def roll(turn_total, outcome):
     >>> roll(99, 1)
     (1, 0, True)
     """
-    turn = 0
+
     over = False
+    score = 0
 
-    if outcome !=1 and turn_total < 101:
-        over = False
-        turn = outcome+turn
-    turn_total = turn_total + turn
-    return (turn, turn_total, over)
+    if outcome == 1:
+        over = True
+        turn_total = outcome
+    else:
+        turn_total += outcome
+
+    if over:
+        score = score + turn_total
+        turn_total = 0
+
+    return (score, turn_total, over)
 
 
-
-    "*** YOUR CODE HERE ***"
 
 def hold(turn_total, outcome):
     """Performs the hold action, which adds turn_total to the player's score.
