@@ -94,8 +94,8 @@ def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
 def take_turn_test():
     """Test the take_turn function using deterministic test dice."""
     plan = make_roll_until_plan(10)  # plan is a function (see problem 2)
-    assert take_turn(plan, make_test_die(3,2,4,5)) == 14, 'Outcome shuold be 14'
-    assert take_turn(plan, make_test_die(1, 3, 2, 4, 5)) == 0, 'Outcome shuold be 0'
+    assert take_turn(plan, make_test_die(3,2,4,5)) == 14, 'Outcome should be 14'
+    assert take_turn(plan, make_test_die(1, 3, 2, 4, 5)) == 0, 'Outcome should be 0'
     print(take_turn(plan))  # Not deterministic
 
 
