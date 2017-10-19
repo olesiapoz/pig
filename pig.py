@@ -5,6 +5,7 @@ from ucb import main, trace, log_current_line, interact
 
 goal = 100  # The goal of pig is always to score 100 points.
 
+
 # Taking turns
 
 def roll(turn_total, outcome):
@@ -27,18 +28,23 @@ def roll(turn_total, outcome):
     >>> roll(99, 1)
     (1, 0, True)
     """
-    turn = 0
+
     over = False
+    score = 0
 
-    if outcome !=1 and turn_total < 101:
-        turn_temp = outcome+turn
+    if outcome == 1:
+        over = True
+        turn_total = outcome
+    else:
+        turn_total += outcome
 
-    turn_total = turn_total + turn
-    return (turn, turn_total, over)
+    if over:
+        score = score + turn_total
+        turn_total = 0
+
+    return (score, turn_total, over)
 
 
-
-    "*** YOUR CODE HERE ***"
 
 def hold(turn_total, outcome):
     """Performs the hold action, which adds turn_total to the player's score.
@@ -55,9 +61,16 @@ def hold(turn_total, outcome):
     >>> hold(99, 1)
     (99, 0, True)
     """
-    "*** YOUR CODE HERE ***"
+    score = 0
+    over = True
 
-def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
+    score = score + turn_total
+    turn_total = 0
+
+    return (score, turn_total, over)
+
+@trace
+def take_turn(plan, dice=make_fair_die(), who='Someone', comments=True):
     """Simulate a single turn and return the points scored for the whole turn.
 
     Important: The d function should be called once, **and only once**, for
@@ -70,19 +83,34 @@ def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
     who -- name of the current player
     comments -- a boolean; whether commentary is enabled
     """
-    score_for_turn = 0  # Points scored in the whole turn
-    "*** YOUR CODE HERE ***"
+    score_for_turn = 0 #Points scored in the whole turn
+    outcome = dice()
+    result=[]
+    turn_total = score_for_turn
+    action = plan(score_for_turn)
+    while action == roll:
+        result = action(turn_total, outcome) #(score, turn_total, over)
+        turn_total = result[1]
+        score_for_turn = result[0]
+        outcome = dice()
+        if comments:
+            commentate(action, outcome, score_for_turn, turn_total, result[2], who)  #commentate(action, outcome, score_for_turn, turn_total, over, who):
+        action = plan(turn_total)
+    if comments:
+        commentate(action, outcome, score_for_turn, turn_total, result[2], who)  # commentate(action, outcome, score_for_turn, turn_total, over, who):
     return score_for_turn
 
+@trace
 def take_turn_test():
     """Test the take_turn function using deterministic test dice."""
     plan = make_roll_until_plan(10)  # plan is a function (see problem 2)
-    "*** YOUR CODE HERE ***"
+    assert take_turn(plan, make_test_die(3,2,4,5)) == 14, 'Outcome should be 14'
+    assert take_turn(plan, make_test_die(1, 3, 2, 4, 5)) == 0, 'Outcome should be 0'
     print(take_turn(plan))  # Not deterministic
 
 
 # Commentating
-
+@trace
 def commentate(action, outcome, score_for_turn, turn_total, over, who):
     """Print descriptive comments about a game event.
     
@@ -115,8 +143,12 @@ def describe_action(action):
     >>> describe_action(commentate)
     'took an illegal action!'
     """
-    "*** YOUR CODE HERE ***"
-    return 'did something...'
+    if action == roll:
+        return 'chose to roll.'
+    elif action == hold:
+        return 'decided to hold.'
+    else:
+        return 'took an illegal action!'
  
 def draw_number(n, dot='*'):
     """Return an ascii art representation of rolling the number n.
