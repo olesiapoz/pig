@@ -70,7 +70,7 @@ def hold(turn_total, outcome):
     return (score, turn_total, over)
 
 @trace
-def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
+def take_turn(plan, dice=make_fair_die(), who='Someone', comments=True):
     """Simulate a single turn and return the points scored for the whole turn.
 
     Important: The d function should be called once, **and only once**, for
@@ -83,11 +83,21 @@ def take_turn(plan, dice=make_fair_die(), who='Someone', comments=False):
     who -- name of the current player
     comments -- a boolean; whether commentary is enabled
     """
-
-    score_for_turn = 0  # Points scored in the whole turn
-    if plan(score_for_turn) == roll:
-        while not plan(score_for_turn)(score_for_turn, (dice()))[2]:
-            score_for_turn = plan(score_for_turn)(score_for_turn, dice())[1]
+    score_for_turn = 0 #Points scored in the whole turn
+    outcome = dice()
+    result=[]
+    turn_total = score_for_turn
+    action = plan(score_for_turn)
+    while action == roll:
+        result = action(turn_total, outcome) #(score, turn_total, over)
+        turn_total = result[1]
+        score_for_turn = result[0]
+        outcome = dice()
+        if comments:
+            commentate(action, outcome, score_for_turn, turn_total, result[2], who)  #commentate(action, outcome, score_for_turn, turn_total, over, who):
+        action = plan(turn_total)
+    if comments:
+        commentate(action, outcome, score_for_turn, turn_total, result[2], who)  # commentate(action, outcome, score_for_turn, turn_total, over, who):
     return score_for_turn
 
 @trace
@@ -100,7 +110,7 @@ def take_turn_test():
 
 
 # Commentating
-
+@trace
 def commentate(action, outcome, score_for_turn, turn_total, over, who):
     """Print descriptive comments about a game event.
     
@@ -133,8 +143,12 @@ def describe_action(action):
     >>> describe_action(commentate)
     'took an illegal action!'
     """
-    "*** YOUR CODE HERE ***"
-    return 'did something...'
+    if action == roll:
+        return 'chose to roll.'
+    elif action == hold:
+        return 'decided to hold.'
+    else:
+        return 'took an illegal action!'
  
 def draw_number(n, dot='*'):
     """Return an ascii art representation of rolling the number n.
