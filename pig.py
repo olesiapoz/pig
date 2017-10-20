@@ -220,7 +220,15 @@ def play(strategy, opponent_strategy):
     opponent_strategy -- The strategy function for the second player
     """
     who = 0 # Which player is about to take a turn, 0 (first) or 1 (second)
-    "*** YOUR CODE HERE ***"
+    score_1 = 0
+    opponent_score = 0
+    if who == 0:
+        who = other(who)
+        plan = strategy (score_1, score_2)
+    else:
+        who = other(who)
+        plan =opponent_strategy
+    take_turn(plan)
     return who
 
 def other(who):
@@ -251,14 +259,18 @@ def make_roll_until_strategy(turn_goal):
     A strategy is a function that takes two game scores as arguments and
     returns a plan (which is a function from turn totals to actions).
     """
-    def plan(player_score, opponent_score=0):
-        if player_score >= turn_goal:
-            return hold
-        else:
-            return roll
+    def strategy(score, opponets_score):
 
-    return plan
+        def plan(turn):
+            if turn >= turn_goal:
+                return hold
+            else:
+                return roll
+        return plan
 
+    return strategy
+
+@trace
 def make_roll_until_strategy_test():
     """Test that make_roll_until_strategy gives a strategy that returns correct
     roll-until plans."""
@@ -381,10 +393,10 @@ def run():
     take_turn_test()
 
     # Uncomment the next line to play an interactive game
-    # play(interactive_strategy, make_roll_until_strategy(20))
+    #play(interactive_strategy, make_roll_until_strategy(20))
 
     # Uncomment the next line to test make_roll_until_strategy
-    make_roll_until_strategy_test()
+    #make_roll_until_strategy_test()
 
     run_strategy_experiments()
 
