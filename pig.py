@@ -212,7 +212,7 @@ def draw_die(c, f, b, s, dot):
 
 
 # Game simulator
-
+@trace
 def play(strategy, opponent_strategy):
     """Simulate a game and return 0 if the first player wins and 1 otherwise.
     
@@ -220,15 +220,21 @@ def play(strategy, opponent_strategy):
     opponent_strategy -- The strategy function for the second player
     """
     who = 0 # Which player is about to take a turn, 0 (first) or 1 (second)
-    score_1 = 0
-    opponent_score = 0
-    if who == 0:
-        who = other(who)
-        plan = strategy (score_1, score_2)
-    else:
-        who = other(who)
-        plan =opponent_strategy
-    take_turn(plan)
+    total_score = 0
+    total_opponent_score = 0
+    while total_score < 100 and total_opponent_score < 100:
+        if who == 0 and total_opponent_score < 100:
+            plan = strategy(total_score, total_opponent_score)
+            score = take_turn(plan)
+            total_score += score
+            who = other(who)
+
+        elif total_score < 100:
+            opponent_plan = opponent_strategy(total_score, total_opponent_score)
+            opponent_score = take_turn(opponent_plan)
+            total_opponent_score +=opponent_score
+            who = other(who)
+    who = other(who)
     return who
 
 def other(who):
@@ -270,7 +276,7 @@ def make_roll_until_strategy(turn_goal):
 
     return strategy
 
-@trace
+
 def make_roll_until_strategy_test():
     """Test that make_roll_until_strategy gives a strategy that returns correct
     roll-until plans."""
@@ -390,13 +396,14 @@ def interactive_strategy(score, opponent_score):
 
 @main
 def run():
-    take_turn_test()
+    #take_turn_test()
 
     # Uncomment the next line to play an interactive game
-    #play(interactive_strategy, make_roll_until_strategy(20))
+    play(interactive_strategy, make_roll_until_strategy(20))
+    #play(make_roll_until_strategy(20), make_roll_until_strategy(20))
 
     # Uncomment the next line to test make_roll_until_strategy
     #make_roll_until_strategy_test()
 
-    run_strategy_experiments()
+    #run_strategy_experiments()
 
